@@ -25,7 +25,7 @@ namespace SequenceEqualComparison
         protected IEnumerable<int> l1;
         protected IEnumerable<int> l2;
 
-        [Params(100, 10000, 1000000, int.MaxValue)]
+        [Params(1, 10, 20, 50, 100, 200, 500, 1000, 10000, 1000000, int.MaxValue)]
         public int Count;
 
         [GlobalSetup]
