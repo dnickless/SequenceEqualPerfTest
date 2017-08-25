@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
@@ -22,8 +23,8 @@ namespace SequenceEqualComparison
     [CoreJob]
     public abstract class BenchmarkBase
     {
-        protected IEnumerable<int> l1;
-        protected IEnumerable<int> l2;
+        private IEnumerable<int> l1;
+        private IEnumerable<int> l2;
 
         [Params(1, 10, 20, 50, 100, 200, 500, 1000, 10000, 1000000, int.MaxValue)]
         public int Count;
@@ -31,10 +32,26 @@ namespace SequenceEqualComparison
         [GlobalSetup]
         public void Initialize()
         {
-            Initialize(Enumerable.Range(1, Count));
+            l1 = Initialize(Enumerable.Range(1, Count));
+            l2 = Initialize(Enumerable.Range(1, Count));
+
+            CheckCorrectness();
         }
 
-        protected abstract void Initialize(IEnumerable<int> range);
+        private void CheckCorrectness()
+        {
+            if (!l1.SequenceEqual(l2))
+            {
+                throw new Exception("wrong test setup, we want equal collections");
+            }
+
+            if (!l1.SequenceEqualNew(l2))
+            {
+                throw new Exception("wrong new implementation");
+            }
+        }
+
+        protected abstract IEnumerable<int> Initialize(IEnumerable<int> range);
 
         [Benchmark(Description = "New")]
         public void TestArrayNew()
@@ -51,46 +68,41 @@ namespace SequenceEqualComparison
 
     public class BenchmarkUsingArray : BenchmarkBase
     {
-        protected override void Initialize(IEnumerable<int> range)
+        protected override IEnumerable<int> Initialize(IEnumerable<int> range)
         {
-            l1 = range.ToArray();
-            l2 = range.ToArray();
+            return range.ToArray();
         }
     }
 
     public class BenchmarkUsingList : BenchmarkBase
     {
-        protected override void Initialize(IEnumerable<int> range)
+        protected override IEnumerable<int> Initialize(IEnumerable<int> range)
         {
-            l1 = range.ToList();
-            l2 = range.ToList();
+            return range.ToList();
         }
     }
 
     public class BenchmarkUsingImmutableList : BenchmarkBase
     {
-        protected override void Initialize(IEnumerable<int> range)
+        protected override IEnumerable<int> Initialize(IEnumerable<int> range)
         {
-            l1 = ImmutableList.Create(range.ToArray());
-            l2 = ImmutableList.Create(range.ToArray());
+            return ImmutableList.Create(range.ToArray());
         }
     }
 
     public class BenchmarkUsingSortedSet : BenchmarkBase
     {
-        protected override void Initialize(IEnumerable<int> range)
+        protected override IEnumerable<int> Initialize(IEnumerable<int> range)
         {
-            l1 = new SortedSet<int>(range);
-            l2 = new SortedSet<int>(range);
+            return new SortedSet<int>(range);
         }
     }
 
     public class BenchmarkUsingIEnumerable : BenchmarkBase
     {
-        protected override void Initialize(IEnumerable<int> range)
+        protected override IEnumerable<int> Initialize(IEnumerable<int> range)
         {
-            l1 = range;
-            l2 = range;
+            return range;
         }
     }
 }
