@@ -23,8 +23,8 @@ namespace SequenceEqualComparison
     [CoreJob]
     public abstract class BenchmarkBase
     {
-        private IEnumerable<int> l1;
-        private IEnumerable<int> l2;
+        private IEnumerable<int> _first;
+        private IEnumerable<int> _second;
 
         [Params(1, 10, 20, 50, 100, 200, 500, 1000, 10000, 1000000, int.MaxValue)]
         public int Count;
@@ -32,20 +32,20 @@ namespace SequenceEqualComparison
         [GlobalSetup]
         public void Initialize()
         {
-            l1 = Initialize(Enumerable.Range(1, Count));
-            l2 = Initialize(Enumerable.Range(1, Count));
+            _first = Initialize(Enumerable.Range(1, Count));
+            _second = Initialize(Enumerable.Range(1, Count));
 
             CheckCorrectness();
         }
 
         private void CheckCorrectness()
         {
-            if (!l1.SequenceEqual(l2))
+            if (!_first.SequenceEqual(_second))
             {
                 throw new Exception("wrong test setup, we want equal collections");
             }
 
-            if (!l1.SequenceEqualNew(l2))
+            if (!_first.SequenceEqualNew(_second))
             {
                 throw new Exception("wrong new implementation");
             }
@@ -56,13 +56,13 @@ namespace SequenceEqualComparison
         [Benchmark(Description = "New")]
         public void TestArrayNew()
         {
-            bool b = l1.SequenceEqualNew(l2);
+            bool b = _first.SequenceEqualNew(_second);
         }
 
         [Benchmark(Description = "Old")]
         public void TestArrayOld()
         {
-            bool b = l1.SequenceEqual(l2);
+            bool b = _first.SequenceEqual(_second);
         }
     }
 
