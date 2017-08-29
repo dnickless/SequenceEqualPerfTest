@@ -6,3 +6,4 @@ Since I'm using Benchmark.NET we are currently limited to x64 architecture.
 
 Results (calculated using Benchmark.NET) on my machine can be found at:
 
+https://github.com/dnickless/SequenceEqualPerfTest/tree/master/SequenceEqualComparison/BenchmarkDotNet.Artifacts/results
