@@ -32,7 +32,7 @@ namespace SequenceEqualComparison
         private T _first;
         private T _second;
 
-        [Params(1, 10, 20, 50, 100, 200, 500, 1000, 10000, 1000000, int.MaxValue)]
+        [Params(1, 10, 20, 50, 100, 200, 500, 1000, 10000, 1000000, 100000000)]
         public int Count;
 
         [GlobalSetup]
